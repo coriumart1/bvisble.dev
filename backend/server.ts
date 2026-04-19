@@ -11,7 +11,20 @@ import searchRouter from './routes/search'
 const app = express()
 const PORT = Number(process.env.PORT ?? 3000)
 const FRONTEND_DIST = join(__dirname, '../../dist/frontend')
+const AUTH_USER = process.env.AUTH_USER ?? 'admin'
+const AUTH_PASS = process.env.AUTH_PASS ?? ''
 
+function basicAuth(req: express.Request, res: express.Response, next: express.NextFunction): void {
+  if (!AUTH_PASS) { next(); return }
+  const header = req.headers.authorization ?? ''
+  const b64 = header.startsWith('Basic ') ? header.slice(6) : ''
+  const [user, pass] = Buffer.from(b64, 'base64').toString().split(':')
+  if (user === AUTH_USER && pass === AUTH_PASS) { next(); return }
+  res.setHeader('WWW-Authenticate', 'Basic realm="ProjectManager"')
+  res.status(401).send('Unauthorized')
+}
+
+app.use(basicAuth)
 app.use(express.json())
 
 app.use('/api/projects', projectsRouter)
