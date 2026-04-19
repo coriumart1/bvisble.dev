@@ -67,7 +67,9 @@ export function updateTimeEntry(id: number, data: UpdateTimeEntryData): TimeEntr
   if (data.ended_at !== undefined) { fields.push('ended_at = ?'); values.push(data.ended_at) }
   if (fields.length === 0) return getEntryById(id)!
   db.prepare(`UPDATE time_entries SET ${fields.join(', ')} WHERE id = ?`).run(...values, id)
-  return getEntryById(id)!
+  const updated = getEntryById(id)
+  if (!updated) throw new Error(`Time entry ${id} not found`)
+  return updated
 }
 
 export function deleteTimeEntry(id: number): void {

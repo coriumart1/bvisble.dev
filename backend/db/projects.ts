@@ -68,7 +68,9 @@ export function updateProject(id: number, data: UpdateProjectData): Project {
   fields.push("updated_at = datetime('now')")
 
   db.prepare(`UPDATE projects SET ${fields.join(', ')} WHERE id = ?`).run(...values, id)
-  return getProjectById(id)!
+  const updated = getProjectById(id)
+  if (!updated) throw new Error(`Project ${id} not found`)
+  return updated
 }
 
 export function deleteProject(id: number): void {

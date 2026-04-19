@@ -24,5 +24,11 @@ app.use('/api/search', searchRouter)
 app.use(express.static(FRONTEND_DIST))
 app.get('*', (_req, res) => res.sendFile(join(FRONTEND_DIST, 'index.html')))
 
+// Error handler — must be last middleware
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error(err)
+  res.status(500).json({ error: err.message ?? 'Internal server error' })
+})
+
 initDatabase()
 app.listen(PORT, '0.0.0.0', () => console.log(`Server running on :${PORT}`))

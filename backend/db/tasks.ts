@@ -77,7 +77,9 @@ export function updateTask(id: number, data: UpdateTaskData): Task {
   fields.push("updated_at = datetime('now')")
 
   db.prepare(`UPDATE tasks SET ${fields.join(', ')} WHERE id = ?`).run(...values, id)
-  return getTaskById(id)!
+  const updated = getTaskById(id)
+  if (!updated) throw new Error(`Task ${id} not found`)
+  return updated
 }
 
 export function deleteTask(id: number): void {

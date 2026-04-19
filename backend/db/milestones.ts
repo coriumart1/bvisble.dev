@@ -66,7 +66,9 @@ export function updateMilestone(id: number, data: UpdateMilestoneData): Mileston
   fields.push("updated_at = datetime('now')")
 
   db.prepare(`UPDATE milestones SET ${fields.join(', ')} WHERE id = ?`).run(...values, id)
-  return getMilestoneById(id)!
+  const updated = getMilestoneById(id)
+  if (!updated) throw new Error(`Milestone ${id} not found`)
+  return updated
 }
 
 export function deleteMilestone(id: number): void {

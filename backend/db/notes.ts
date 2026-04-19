@@ -38,7 +38,9 @@ export function updateNote(id: number, data: UpdateNoteData): Note {
   if (fields.length === 0) return getNoteById(id)!
   fields.push("updated_at = datetime('now')")
   db.prepare(`UPDATE notes SET ${fields.join(', ')} WHERE id = ?`).run(...values, id)
-  return getNoteById(id)!
+  const updated = getNoteById(id)
+  if (!updated) throw new Error(`Note ${id} not found`)
+  return updated
 }
 
 export function deleteNote(id: number): void {
