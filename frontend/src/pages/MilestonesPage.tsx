@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { MilestoneItem } from '../components/milestones/MilestoneItem'
+import { api } from '../api/client'
 import type { Milestone } from '../types'
 
 type MilestoneWithProject = Milestone & { project_name: string }
@@ -17,7 +18,7 @@ export function MilestonesPage(): React.JSX.Element {
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
 
   async function load(): Promise<void> {
-    const data = await window.api.milestones.getAll()
+    const data = await api.milestones.getAll()
     setMilestones(data)
     setLoading(false)
   }
@@ -25,12 +26,12 @@ export function MilestonesPage(): React.JSX.Element {
   useEffect(() => { load() }, [])
 
   async function handleToggle(milestone: Milestone): Promise<void> {
-    await window.api.milestones.update(milestone.id, { completed: milestone.completed === 1 ? 0 : 1 })
+    await api.milestones.update(milestone.id, { completed: milestone.completed === 1 ? 0 : 1 })
     await load()
   }
 
   async function handleDelete(milestone: Milestone): Promise<void> {
-    await window.api.milestones.delete(milestone.id)
+    await api.milestones.delete(milestone.id)
     await load()
   }
 

@@ -3,6 +3,7 @@ import { pdf } from '@react-pdf/renderer'
 import { ProjectReportDocument, type ReportData } from './ProjectReport'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
+import { api } from '../../api/client'
 import type { Project } from '../../types'
 
 interface ReportModalProps {
@@ -28,8 +29,8 @@ export function ReportModal({ open, onClose, project }: ReportModalProps): React
   async function loadData(): Promise<void> {
     setLoading(true)
     const [notes, totalTime] = await Promise.all([
-      window.api.notes.getByProject(project.id),
-      window.api.time.getTotalByProject(project.id)
+      api.notes.getByProject(project.id),
+      api.time.getTotalByProject(project.id)
     ])
     setData({ project, notes, totalTime })
     setLoading(false)
@@ -42,25 +43,16 @@ export function ReportModal({ open, onClose, project }: ReportModalProps): React
     try {
       const doc = <ProjectReportDocument data={data} />
       const blob = await pdf(doc).toBlob()
-      const arrayBuffer = await blob.arrayBuffer()
-
-      const uint8 = new Uint8Array(arrayBuffer)
-      let binary = ''
-      const chunkSize = 8192
-      for (let i = 0; i < uint8.length; i += chunkSize) {
-        binary += String.fromCharCode(...uint8.subarray(i, i + chunkSize))
-      }
-      const base64 = btoa(binary)
 
       const filename = `Abschlussbericht_${project.name.replace(/[^a-zA-Z0-9äöüÄÖÜß\- ]/g, '_')}.pdf`
-      const res = await window.api.dialog.savePdf(filename, base64)
-      if (res.success) {
-        setResult('success')
-        setSavedPath(res.path ?? '')
-      } else {
-        setErrorMessage(res.error ?? 'Unbekannter Fehler')
-        setResult('error')
-      }
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      a.click()
+      URL.revokeObjectURL(url)
+      setResult('success')
+      setSavedPath(filename)
     } catch (e) {
       console.error('PDF Error:', e)
       setErrorMessage(e instanceof Error ? e.message : String(e))

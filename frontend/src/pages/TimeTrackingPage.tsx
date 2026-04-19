@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useTimer } from '../contexts/TimerContext'
+import { api } from '../api/client'
 import type { TimeEntry } from '../../../main/db/timeEntries'
 
 function formatDuration(seconds: number): string {
@@ -28,7 +29,7 @@ export function TimeTrackingPage(): React.JSX.Element {
   const { activeTimer, stopTimer, formatElapsed } = useTimer()
 
   async function load(): Promise<void> {
-    const data = await window.api.time.getAll()
+    const data = await api.time.getAll()
     setEntries(data)
     setLoading(false)
   }
@@ -37,7 +38,7 @@ export function TimeTrackingPage(): React.JSX.Element {
   useEffect(() => { if (!activeTimer) load() }, [activeTimer])
 
   async function handleDelete(id: number): Promise<void> {
-    await window.api.time.delete(id)
+    await api.time.delete(id)
     await load()
   }
 

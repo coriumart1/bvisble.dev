@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { api } from '../../api/client'
 import type { Note, Project } from '../../types'
 
 interface ProjectNotesProps {
@@ -29,7 +30,7 @@ export function ProjectNotes({ project }: ProjectNotesProps): React.JSX.Element 
   const [dirty, setDirty] = useState(false)
 
   async function load(): Promise<void> {
-    const data = await window.api.notes.getByProject(project.id)
+    const data = await api.notes.getByProject(project.id)
     setNotes(data)
     return data as unknown as void
   }
@@ -45,7 +46,7 @@ export function ProjectNotes({ project }: ProjectNotesProps): React.JSX.Element 
   }
 
   async function createNote(): Promise<void> {
-    const note = await window.api.notes.create({
+    const note = await api.notes.create({
       project_id: project.id,
       title: 'Neue Notiz',
       content: ''
@@ -57,10 +58,10 @@ export function ProjectNotes({ project }: ProjectNotesProps): React.JSX.Element 
   const saveNote = useCallback(async (title: string, content: string): Promise<void> => {
     if (!selected) return
     setSaving(true)
-    await window.api.notes.update(selected.id, { title, content })
+    await api.notes.update(selected.id, { title, content })
     setSaving(false)
     setDirty(false)
-    const data = await window.api.notes.getByProject(project.id)
+    const data = await api.notes.getByProject(project.id)
     setNotes(data)
     setSelected((prev) => prev ? { ...prev, title, content, updated_at: new Date().toISOString() } : prev)
   }, [selected, project.id])
@@ -73,7 +74,7 @@ export function ProjectNotes({ project }: ProjectNotesProps): React.JSX.Element 
   }, [dirty, editTitle, editContent, saveNote])
 
   async function deleteNote(note: Note): Promise<void> {
-    await window.api.notes.delete(note.id)
+    await api.notes.delete(note.id)
     if (selected?.id === note.id) setSelected(null)
     await load()
   }

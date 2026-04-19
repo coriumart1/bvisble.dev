@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { api } from '../../api/client'
 import type { SearchResult } from '../../types'
 
 const TYPE_CONFIG = {
@@ -35,7 +36,7 @@ export function SearchModal({ open, onClose, onNavigate }: SearchModalProps): Re
     if (!query.trim()) { setResults([]); return }
     setLoading(true)
     debounceRef.current = setTimeout(async () => {
-      const data = await window.api.search.query(query)
+      const data = await api.search.query(query)
       setResults(data)
       setActiveIdx(0)
       setLoading(false)

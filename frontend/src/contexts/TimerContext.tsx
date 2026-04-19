@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { api } from '../api/client'
 
 interface ActiveTimer {
   taskId: number
   taskTitle: string
   entryId: number
   startedAt: Date
-  elapsed: number // seconds
+  elapsed: number
 }
 
 interface TimerContextValue {
@@ -36,32 +37,17 @@ export function TimerProvider({ children }: { children: React.ReactNode }): Reac
   }, [activeTimer?.taskId])
 
   async function startTimer(taskId: number, taskTitle: string): Promise<void> {
-    // Stop any existing timer first
     if (activeTimer) await stopTimer()
-
     const startedAt = new Date()
-    const entry = await window.api.time.create({
-      task_id: taskId,
-      started_at: startedAt.toISOString()
-    })
+    const entry = await api.time.create({ task_id: taskId, started_at: startedAt.toISOString() })
     setActiveTimer({ taskId, taskTitle, entryId: entry.id, startedAt, elapsed: 0 })
-    window.api.widget.sendTimerStarted({
-      taskId,
-      taskTitle,
-      entryId: entry.id,
-      startedAt: startedAt.toISOString()
-    })
   }
 
   async function stopTimer(): Promise<void> {
     if (!activeTimer) return
     const duration = Math.floor((Date.now() - activeTimer.startedAt.getTime()) / 1000)
-    await window.api.time.update(activeTimer.entryId, {
-      ended_at: new Date().toISOString(),
-      duration
-    })
+    await api.time.update(activeTimer.entryId, { ended_at: new Date().toISOString(), duration })
     setActiveTimer(null)
-    window.api.widget.sendTimerStopped()
   }
 
   function formatElapsed(seconds: number): string {

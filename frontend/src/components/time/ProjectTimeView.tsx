@@ -3,6 +3,7 @@ import { useTimer } from '../../contexts/TimerContext'
 import { Modal } from '../ui/Modal'
 import { Input } from '../ui/Input'
 import { Button } from '../ui/Button'
+import { api } from '../../api/client'
 import type { Project, Task } from '../../types'
 import type { TimeEntry } from '../../../../main/db/timeEntries'
 
@@ -52,7 +53,7 @@ function ManualEntryForm({ open, onClose, tasks, onSaved }: ManualEntryFormProps
     setError('')
     setLoading(true)
     try {
-      await window.api.time.create({
+      await api.time.create({
         task_id: taskId as number,
         description: description || undefined,
         duration,
@@ -126,8 +127,8 @@ export function ProjectTimeView({ project, tasks }: ProjectTimeViewProps): React
 
   async function load(): Promise<void> {
     const [data, t] = await Promise.all([
-      window.api.time.getByProject(project.id),
-      window.api.time.getTotalByProject(project.id)
+      api.time.getByProject(project.id),
+      api.time.getTotalByProject(project.id)
     ])
     setEntries(data)
     setTotal(t)
@@ -141,7 +142,7 @@ export function ProjectTimeView({ project, tasks }: ProjectTimeViewProps): React
   }, [activeTimer])
 
   async function handleDelete(id: number): Promise<void> {
-    await window.api.time.delete(id)
+    await api.time.delete(id)
     await load()
   }
 

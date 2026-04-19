@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ProjectCard, ConfirmDelete } from '../components/projects/ProjectCard'
 import { ProjectForm } from '../components/projects/ProjectForm'
 import { Button } from '../components/ui/Button'
+import { api } from '../api/client'
 import type { Project, ProjectStatus, CreateProjectData, UpdateProjectData } from '../types'
 
 type FilterStatus = 'all' | ProjectStatus
@@ -32,7 +33,7 @@ export function ProjectsPage({ onSelectProject }: ProjectsPageProps): React.JSX.
   }, [])
 
   async function load(): Promise<void> {
-    const data = await window.api.projects.getAll()
+    const data = await api.projects.getAll()
     setProjects(data)
     setLoading(false)
   }
@@ -40,26 +41,26 @@ export function ProjectsPage({ onSelectProject }: ProjectsPageProps): React.JSX.
   useEffect(() => { load() }, [])
 
   async function handleCreate(data: CreateProjectData | UpdateProjectData): Promise<void> {
-    await window.api.projects.create(data as CreateProjectData)
+    await api.projects.create(data as CreateProjectData)
     await load()
   }
 
   async function handleEdit(data: CreateProjectData | UpdateProjectData): Promise<void> {
     if (!editProject) return
-    await window.api.projects.update(editProject.id, data as UpdateProjectData)
+    await api.projects.update(editProject.id, data as UpdateProjectData)
     setEditProject(undefined)
     await load()
   }
 
   async function handleDelete(): Promise<void> {
     if (!deleteProject) return
-    await window.api.projects.delete(deleteProject.id)
+    await api.projects.delete(deleteProject.id)
     setDeleteProject(undefined)
     await load()
   }
 
   async function handleStatusChange(project: Project, status: ProjectStatus): Promise<void> {
-    await window.api.projects.update(project.id, { status })
+    await api.projects.update(project.id, { status })
     await load()
   }
 

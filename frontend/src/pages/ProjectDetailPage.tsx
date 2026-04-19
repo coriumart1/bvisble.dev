@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { api } from '../api/client'
 import { TaskItem } from '../components/tasks/TaskItem'
 import { TaskForm } from '../components/tasks/TaskForm'
 import { KanbanBoard } from '../components/kanban/KanbanBoard'
@@ -35,8 +36,8 @@ export function ProjectDetailPage({ project, onBack }: ProjectDetailPageProps): 
 
   async function load(): Promise<void> {
     const [taskData, milestoneData] = await Promise.all([
-      window.api.tasks.getByProject(project.id),
-      window.api.milestones.getByProject(project.id)
+      api.tasks.getByProject(project.id),
+      api.milestones.getByProject(project.id)
     ])
     setTasks(taskData)
     setMilestones(milestoneData)
@@ -51,7 +52,7 @@ export function ProjectDetailPage({ project, onBack }: ProjectDetailPageProps): 
     priority: TaskPriority
     due_date?: string
   }): Promise<void> {
-    await window.api.tasks.create({ project_id: project.id, ...data })
+    await api.tasks.create({ project_id: project.id, ...data })
     await load()
   }
 
@@ -62,23 +63,23 @@ export function ProjectDetailPage({ project, onBack }: ProjectDetailPageProps): 
     due_date?: string
   }): Promise<void> {
     if (!editTask) return
-    await window.api.tasks.update(editTask.id, data)
+    await api.tasks.update(editTask.id, data)
     setEditTask(undefined)
     await load()
   }
 
   async function handleStatusChange(task: Task, status: TaskStatus): Promise<void> {
-    await window.api.tasks.update(task.id, { status })
+    await api.tasks.update(task.id, { status })
     await load()
   }
 
   async function handleDelete(task: Task): Promise<void> {
-    await window.api.tasks.delete(task.id)
+    await api.tasks.delete(task.id)
     await load()
   }
 
   async function handleQuickAdd(status: TaskStatus, title: string): Promise<void> {
-    await window.api.tasks.create({ project_id: project.id, title, status, priority: 'medium' })
+    await api.tasks.create({ project_id: project.id, title, status, priority: 'medium' })
     await load()
   }
 

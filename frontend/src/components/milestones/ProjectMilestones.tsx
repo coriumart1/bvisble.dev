@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { MilestoneItem } from './MilestoneItem'
 import { MilestoneForm } from './MilestoneForm'
 import { Button } from '../ui/Button'
+import { api } from '../../api/client'
 import type { Milestone, Project } from '../../types'
 
 interface ProjectMilestonesProps {
@@ -15,7 +16,7 @@ export function ProjectMilestones({ project }: ProjectMilestonesProps): React.JS
   const [editMilestone, setEditMilestone] = useState<Milestone | undefined>()
 
   async function load(): Promise<void> {
-    const data = await window.api.milestones.getByProject(project.id)
+    const data = await api.milestones.getByProject(project.id)
     setMilestones(data)
     setLoading(false)
   }
@@ -23,24 +24,24 @@ export function ProjectMilestones({ project }: ProjectMilestonesProps): React.JS
   useEffect(() => { load() }, [project.id])
 
   async function handleCreate(data: { name: string; description?: string; due_date?: string }): Promise<void> {
-    await window.api.milestones.create({ project_id: project.id, ...data })
+    await api.milestones.create({ project_id: project.id, ...data })
     await load()
   }
 
   async function handleEdit(data: { name: string; description?: string; due_date?: string }): Promise<void> {
     if (!editMilestone) return
-    await window.api.milestones.update(editMilestone.id, data)
+    await api.milestones.update(editMilestone.id, data)
     setEditMilestone(undefined)
     await load()
   }
 
   async function handleToggle(milestone: Milestone): Promise<void> {
-    await window.api.milestones.update(milestone.id, { completed: milestone.completed === 1 ? 0 : 1 })
+    await api.milestones.update(milestone.id, { completed: milestone.completed === 1 ? 0 : 1 })
     await load()
   }
 
   async function handleDelete(milestone: Milestone): Promise<void> {
-    await window.api.milestones.delete(milestone.id)
+    await api.milestones.delete(milestone.id)
     await load()
   }
 
