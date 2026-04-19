@@ -24,31 +24,31 @@ export function TopBar(): React.JSX.Element {
   }, [])
 
   return (
-    <div className="h-9 shrink-0 flex items-center justify-between px-4 bg-gray-900 border-b border-gray-800 text-xs text-gray-400">
-      <div className="flex items-center gap-3">
+    <div className="h-12 shrink-0 flex items-center justify-between px-4 bg-gray-900 border-b border-gray-800 text-sm text-gray-400">
+      <div className="flex items-center gap-4">
         <a
           href="https://ai.b-visible.dev"
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-1.5 hover:text-gray-200 transition-colors"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-800 hover:text-gray-200 transition-colors"
         >
-          <span>🤖</span> KI Chat
+          <span className="text-base">🤖</span> KI Chat
         </a>
         <a
           href="https://code.b-visible.dev"
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-1.5 hover:text-gray-200 transition-colors"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-800 hover:text-gray-200 transition-colors"
         >
-          <span>💻</span> Code
+          <span className="text-base">💻</span> Code
         </a>
         <a
           href="https://terminal.b-visible.dev"
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-1.5 hover:text-gray-200 transition-colors"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-800 hover:text-gray-200 transition-colors"
         >
-          <span>⌨️</span> Terminal
+          <span className="text-base">⌨️</span> Terminal
         </a>
       </div>
       {stats && (
