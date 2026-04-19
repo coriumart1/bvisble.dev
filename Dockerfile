@@ -1,5 +1,8 @@
 FROM node:20-alpine AS builder
 
+# better-sqlite3 requires native build tools
+RUN apk add --no-cache python3 make g++
+
 WORKDIR /app
 
 # Install root deps (backend)
@@ -20,6 +23,9 @@ RUN cd frontend && npm run build
 RUN npx tsc -p backend/tsconfig.json
 
 FROM node:20-alpine
+
+# Required at runtime by better-sqlite3 native module
+RUN apk add --no-cache libstdc++
 
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
