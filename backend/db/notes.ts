@@ -35,6 +35,7 @@ export function updateNote(id: number, data: UpdateNoteData): Note {
   const values: unknown[] = []
   if (data.title !== undefined) { fields.push('title = ?'); values.push(data.title) }
   if (data.content !== undefined) { fields.push('content = ?'); values.push(data.content) }
+  if (fields.length === 0) return getNoteById(id)!
   fields.push("updated_at = datetime('now')")
   db.prepare(`UPDATE notes SET ${fields.join(', ')} WHERE id = ?`).run(...values, id)
   return getNoteById(id)!

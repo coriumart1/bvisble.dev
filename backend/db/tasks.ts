@@ -73,6 +73,7 @@ export function updateTask(id: number, data: UpdateTaskData): Task {
   if (data.priority !== undefined) { fields.push('priority = ?'); values.push(data.priority) }
   if ('due_date' in data) { fields.push('due_date = ?'); values.push(data.due_date ?? null) }
   if ('milestone_id' in data) { fields.push('milestone_id = ?'); values.push(data.milestone_id ?? null) }
+  if (fields.length === 0) return getTaskById(id)!
   fields.push("updated_at = datetime('now')")
 
   db.prepare(`UPDATE tasks SET ${fields.join(', ')} WHERE id = ?`).run(...values, id)

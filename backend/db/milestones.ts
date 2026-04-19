@@ -62,6 +62,7 @@ export function updateMilestone(id: number, data: UpdateMilestoneData): Mileston
   if (data.description !== undefined) { fields.push('description = ?'); values.push(data.description) }
   if ('due_date' in data) { fields.push('due_date = ?'); values.push(data.due_date ?? null) }
   if (data.completed !== undefined) { fields.push('completed = ?'); values.push(data.completed) }
+  if (fields.length === 0) return getMilestoneById(id)!
   fields.push("updated_at = datetime('now')")
 
   db.prepare(`UPDATE milestones SET ${fields.join(', ')} WHERE id = ?`).run(...values, id)

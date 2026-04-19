@@ -64,6 +64,7 @@ export function updateProject(id: number, data: UpdateProjectData): Project {
   if (data.status !== undefined) { fields.push('status = ?'); values.push(data.status) }
   if (data.start_date !== undefined) { fields.push('start_date = ?'); values.push(data.start_date) }
   if (data.end_date !== undefined) { fields.push('end_date = ?'); values.push(data.end_date) }
+  if (fields.length === 0) return getProjectById(id)!
   fields.push("updated_at = datetime('now')")
 
   db.prepare(`UPDATE projects SET ${fields.join(', ')} WHERE id = ?`).run(...values, id)

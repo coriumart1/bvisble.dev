@@ -12,12 +12,13 @@ export interface SearchResult {
 export function search(query: string): SearchResult[] {
   if (!query.trim()) return []
   const db = getDb()
-  const q = `%${query.trim()}%`
+  const escaped = query.trim().replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_')
+  const q = `%${escaped}%`
   const results: SearchResult[] = []
 
   const projects = db.prepare(`
     SELECT id, name, description, status FROM projects
-    WHERE (name LIKE ? OR description LIKE ?) AND status != 'archived'
+    WHERE (name LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\') AND status != 'archived'
     LIMIT 5
   `).all(q, q) as { id: number; name: string; description: string | null; status: string }[]
   for (const p of projects) {
@@ -27,7 +28,7 @@ export function search(query: string): SearchResult[] {
   const tasks = db.prepare(`
     SELECT t.id, t.title, t.description, t.status, t.project_id, p.name as project_name
     FROM tasks t JOIN projects p ON p.id = t.project_id
-    WHERE (t.title LIKE ? OR t.description LIKE ?) AND p.status = 'active'
+    WHERE (t.title LIKE ? ESCAPE '\\' OR t.description LIKE ? ESCAPE '\\') AND p.status = 'active'
     LIMIT 8
   `).all(q, q) as { id: number; title: string; description: string | null; status: string; project_id: number; project_name: string }[]
   for (const t of tasks) {
@@ -37,7 +38,7 @@ export function search(query: string): SearchResult[] {
   const notes = db.prepare(`
     SELECT n.id, n.title, n.content, n.project_id, p.name as project_name
     FROM notes n JOIN projects p ON p.id = n.project_id
-    WHERE (n.title LIKE ? OR n.content LIKE ?) AND p.status = 'active'
+    WHERE (n.title LIKE ? ESCAPE '\\' OR n.content LIKE ? ESCAPE '\\') AND p.status = 'active'
     LIMIT 5
   `).all(q, q) as { id: number; title: string; content: string | null; project_id: number; project_name: string }[]
   for (const n of notes) {
