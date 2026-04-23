@@ -51,12 +51,20 @@ export function updateDocument(id: number, data: UpdateDocumentData): Document {
   if (data.content !== undefined) { fields.push('content = ?'); values.push(data.content) }
   if ('folder_id' in data) { fields.push('folder_id = ?'); values.push(data.folder_id ?? null) }
 
+  if (fields.length === 0) {
+    const existing = getDocumentById(id)
+    if (!existing) throw new Error(`Document ${id} not found`)
+    return existing
+  }
+
   fields.push("updated_at = datetime('now')")
   values.push(id)
 
-  return db
+  const result = db
     .prepare(`UPDATE documents SET ${fields.join(', ')} WHERE id = ? RETURNING *`)
-    .get(...values) as Document
+    .get(...values) as Document | undefined
+  if (!result) throw new Error(`Document ${id} not found`)
+  return result
 }
 
 export function deleteDocument(id: number): void {

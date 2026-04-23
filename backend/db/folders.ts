@@ -38,8 +38,12 @@ export function deleteFolder(id: number): void {
 }
 
 export function isFolderEmpty(id: number): boolean {
-  const result = getDb()
+  const db = getDb()
+  const docCount = db
     .prepare('SELECT COUNT(*) as count FROM documents WHERE folder_id = ?')
     .get(id) as { count: number }
-  return result.count === 0
+  const subCount = db
+    .prepare('SELECT COUNT(*) as count FROM folders WHERE parent_id = ?')
+    .get(id) as { count: number }
+  return docCount.count === 0 && subCount.count === 0
 }
