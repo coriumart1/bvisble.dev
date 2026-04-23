@@ -16,6 +16,7 @@ export default function DocumentEditor({ document, folders, onUpdate }: Props) {
   const [content, setContent] = useState(document.content)
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState(false)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -40,12 +41,15 @@ export default function DocumentEditor({ document, folders, onUpdate }: Props) {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = setTimeout(async () => {
       setSaving(true)
+      setSaveError(false)
       try {
         const updated = await api.documents.update(document.id, {
           title: newTitle,
           content: newContent
         })
         onUpdate(updated)
+      } catch {
+        setSaveError(true)
       } finally {
         setSaving(false)
       }
@@ -93,7 +97,7 @@ export default function DocumentEditor({ document, folders, onUpdate }: Props) {
           ))}
         </select>
         <span className=text-xs text-gray-400>
-          {saving ? 'Speichern...' : 'Gespeichert'}
+          {saving ? 'Speichern...' : saveError ? 'Fehler beim Speichern' : 'Gespeichert'}
         </span>
       </div>
 
