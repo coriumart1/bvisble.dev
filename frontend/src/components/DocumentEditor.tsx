@@ -79,35 +79,35 @@ export default function DocumentEditor({ document, folders, onUpdate }: Props) {
   }
 
   return (
-    <div className=flex-1 flex flex-col h-full overflow-hidden>
-      <div className=border-b border-gray-200 dark:border-gray-700 p-3 flex items-center gap-3>
+    <div className="flex-1 flex flex-col h-full overflow-hidden">
+      <div className="border-b border-gray-200 dark:border-gray-700 p-3 flex items-center gap-3">
         <input
-          className=flex-1 text-lg font-semibold bg-transparent outline-none border-b border-transparent focus:border-blue-500
+          className="flex-1 text-lg font-semibold bg-transparent outline-none border-b border-transparent focus:border-blue-500"
           value={title}
           onChange={handleTitleChange}
-          placeholder=Titel...
+          placeholder="Titel..."
         />
         <select
-          className=text-sm border rounded px-2 py-1 dark:bg-gray-800 dark:border-gray-600
+          className="text-sm border rounded px-2 py-1 dark:bg-gray-800 dark:border-gray-600"
           value={document.folder_id ?? ''}
           onChange={handleFolderChange}
         >
-          <option value=>Kein Ordner</option>
+          <option value="">Kein Ordner</option>
           {folders.map(f => (
             <option key={f.id} value={f.id}>{f.name}</option>
           ))}
         </select>
-        <span className=text-xs text-gray-400>
+        <span className="text-xs text-gray-400">
           {saving ? 'Speichern...' : saveError ? 'Fehler beim Speichern' : 'Gespeichert'}
         </span>
       </div>
 
-      <div className=flex-1 overflow-hidden data-color-mode=auto>
+      <div className="flex-1 overflow-hidden" data-color-mode="auto">
         <MDEditor
           value={content}
           onChange={handleContentChange}
-          preview=live
-          height=100%
+          preview="live"
+          height="100%"
           style={{ height: '100%', borderRadius: 0, border: 'none' }}
         />
       </div>

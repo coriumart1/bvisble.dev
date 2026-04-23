@@ -47,7 +47,7 @@ export default function DocumentsPage() {
   }
 
   return (
-    <div className=flex h-full>
+    <div className="flex h-full">
       <FolderTree
         folders={folders}
         selectedId={selectedFolderId}
@@ -70,9 +70,9 @@ export default function DocumentsPage() {
           onUpdate={handleDocumentUpdate}
         />
       ) : (
-        <div className=flex-1 flex items-center justify-center text-gray-400>
-          <div className=text-center>
-            <div className=text-4xl mb-3>📄</div>
+        <div className="flex-1 flex items-center justify-center text-gray-400">
+          <div className="text-center">
+            <div className="text-4xl mb-3">📄</div>
             <div>Dokument auswählen oder neues erstellen</div>
           </div>
         </div>
