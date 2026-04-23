@@ -74,5 +74,31 @@ function createTables(): void {
       ended_at    TEXT,
       created_at  TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS folders (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      name       TEXT NOT NULL,
+      parent_id  INTEGER REFERENCES folders(id) ON DELETE RESTRICT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS documents (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      title      TEXT NOT NULL,
+      content    TEXT NOT NULL DEFAULT '',
+      folder_id  INTEGER REFERENCES folders(id) ON DELETE SET NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS attachments (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      document_id   INTEGER NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+      filename      TEXT NOT NULL,
+      original_name TEXT NOT NULL,
+      mimetype      TEXT NOT NULL,
+      size          INTEGER NOT NULL,
+      created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `)
 }
