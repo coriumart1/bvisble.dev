@@ -1,3 +1,5 @@
+import type { Folder, Document, Attachment } from '../types'
+
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
   const res = await fetch(`/api${path}`, {
     method,
@@ -46,6 +48,39 @@ export const api = {
   },
   search: {
     query: (q: string) => request<any[]>('GET', `/search?q=${encodeURIComponent(q)}`)
+  },
+  folders: {
+    getAll: () => request<Folder[]>('GET', '/folders'),
+    create: (data: { name: string; parent_id?: number | null }) =>
+      request<Folder>('POST', '/folders', data),
+    update: (id: number, name: string) =>
+      request<Folder>('PUT', `/folders/${id}`, { name }),
+    delete: (id: number) => request<void>('DELETE', `/folders/${id}`)
+  },
+  documents: {
+    getAll: (folderId?: number) =>
+      request<Document[]>('GET', `/documents${folderId !== undefined ? `?folderId=${folderId}` : ''}`),
+    getById: (id: number) => request<Document>('GET', `/documents/${id}`),
+    create: (data: { title: string; folder_id?: number | null }) =>
+      request<Document>('POST', '/documents', data),
+    update: (id: number, data: Partial<Pick<Document, 'title' | 'content' | 'folder_id'>>) =>
+      request<Document>('PUT', `/documents/${id}`, data),
+    delete: (id: number) => request<void>('DELETE', `/documents/${id}`)
+  },
+  attachments: {
+    getByDocument: (documentId: number) =>
+      request<Attachment[]>('GET', `/documents/${documentId}/attachments`),
+    upload: async (documentId: number, file: File): Promise<Attachment> => {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch(`/api/documents/${documentId}/attachments`, {
+        method: 'POST',
+        body: formData
+      })
+      return res.json()
+    },
+    download: (id: number) => window.open(`/api/attachments/${id}`, '_blank'),
+    delete: (id: number) => request<void>('DELETE', `/attachments/${id}`)
   },
   dialog: {
     savePdf: async (_filename: string, base64Data: string): Promise<void> => {
