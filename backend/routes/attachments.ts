@@ -11,6 +11,7 @@ router.get('/:id', (req, res) => {
   const att = getAttachmentById(Number(req.params.id))
   if (!att) return res.status(404).json({ error: 'Attachment not found' })
   const filePath = path.join(UPLOADS_DIR, att.filename)
+  if (!filePath.startsWith(UPLOADS_DIR)) return res.status(400).json({ error: 'Invalid file path' })
   if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File not found on disk' })
   res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(att.original_name)}"`)
   res.setHeader('Content-Type', att.mimetype)

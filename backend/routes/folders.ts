@@ -13,7 +13,10 @@ const router = Router()
 
 router.get('/', (_req, res) => res.json(getAllFolders()))
 
-router.post('/', (req, res) => res.status(201).json(createFolder(req.body)))
+router.post('/', (req, res) => {
+  if (!req.body.name?.trim()) return res.status(400).json({ error: 'name is required' })
+  res.status(201).json(createFolder(req.body))
+})
 
 router.put('/:id', (req, res) => {
   const folder = getFolderById(Number(req.params.id))

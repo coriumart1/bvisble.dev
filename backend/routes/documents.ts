@@ -36,11 +36,18 @@ const upload = multer({
 const router = Router()
 
 router.get('/', (req, res) => {
-  const folderId = req.query.folderId !== undefined ? Number(req.query.folderId) : undefined
+  const raw = req.query.folderId
+  if (raw !== undefined && isNaN(Number(raw))) {
+    return res.status(400).json({ error: 'Invalid folderId' })
+  }
+  const folderId = raw !== undefined ? Number(raw) : undefined
   res.json(getAllDocuments(folderId))
 })
 
-router.post('/', (req, res) => res.status(201).json(createDocument(req.body)))
+router.post('/', (req, res) => {
+  if (!req.body.title?.trim()) return res.status(400).json({ error: 'title is required' })
+  res.status(201).json(createDocument(req.body))
+})
 
 router.get('/:id', (req, res) => {
   const doc = getDocumentById(Number(req.params.id))
@@ -48,7 +55,14 @@ router.get('/:id', (req, res) => {
   res.json(doc)
 })
 
-router.put('/:id', (req, res) => res.json(updateDocument(Number(req.params.id), req.body)))
+router.put('/:id', (req, res) => {
+  try {
+    res.json(updateDocument(Number(req.params.id), req.body))
+  } catch (err: any) {
+    if (err.message?.includes('not found')) return res.status(404).json({ error: err.message })
+    throw err
+  }
+})
 
 router.delete('/:id', (req, res) => {
   const attachments = getAttachmentsByDocument(Number(req.params.id))
@@ -64,16 +78,19 @@ router.get('/:id/attachments', (req, res) => {
   res.json(getAttachmentsByDocument(Number(req.params.id)))
 })
 
-router.post('/:id/attachments', upload.single('file'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' })
-  const attachment = createAttachment({
-    document_id: Number(req.params.id),
-    filename: req.file.filename,
-    original_name: req.file.originalname,
-    mimetype: req.file.mimetype,
-    size: req.file.size
+router.post('/:id/attachments', (req, res) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) return res.status(400).json({ error: err.message })
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' })
+    const attachment = createAttachment({
+      document_id: Number(req.params.id),
+      filename: req.file.filename,
+      original_name: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size
+    })
+    res.status(201).json(attachment)
   })
-  res.status(201).json(attachment)
 })
 
 export default router
