@@ -6,17 +6,19 @@ import { ProjectsPage } from './pages/ProjectsPage'
 import { ProjectDetailPage } from './pages/ProjectDetailPage'
 import { MilestonesPage } from './pages/MilestonesPage'
 import { TimeTrackingPage } from './pages/TimeTrackingPage'
+import DocumentsPage from './pages/DocumentsPage'
 import { SearchModal } from './components/search/SearchModal'
 import { TopBar } from './components/TopBar'
 import { api } from './api/client'
 import type { Project, SearchResult } from './types'
 
-type Page = 'projects' | 'milestones' | 'time'
+type Page = 'projects' | 'milestones' | 'time' | 'documents'
 
 const navItems: { id: Page; label: string; icon: string }[] = [
   { id: 'projects', label: 'Projekte', icon: '◫' },
   { id: 'milestones', label: 'Meilensteine', icon: '⚑' },
-  { id: 'time', label: 'Zeiterfassung', icon: '◷' }
+  { id: 'time', label: 'Zeiterfassung', icon: '◷' },
+  { id: 'documents' as Page, label: 'Dokumente', icon: '📄' }
 ]
 
 function AppInner(): React.JSX.Element {
@@ -156,6 +158,7 @@ function AppInner(): React.JSX.Element {
           )}
           {page === 'milestones' && <MilestonesPage />}
           {page === 'time' && <TimeTrackingPage />}
+          {page === 'documents' && <DocumentsPage />}
         </main>
       </div>
 
