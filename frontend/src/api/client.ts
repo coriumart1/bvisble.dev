@@ -7,6 +7,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
     body: body ? JSON.stringify(body) : undefined
   })
   if (res.status === 204) return undefined as T
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return res.json()
 }
 
@@ -75,8 +76,10 @@ export const api = {
       formData.append('file', file)
       const res = await fetch(`/api/documents/${documentId}/attachments`, {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'same-origin'
       })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
       return res.json()
     },
     download: (id: number) => window.open(`/api/attachments/${id}`, '_blank'),
