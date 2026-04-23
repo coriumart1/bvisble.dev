@@ -1,10 +1,10 @@
-import * as path from 'path'
-import * as fs from 'fs'
+import { join } from 'path'
+import { existsSync, mkdirSync } from 'fs'
 
-export const UPLOADS_DIR = path.join(process.cwd(), 'uploads')
+export const UPLOADS_DIR = join(process.cwd(), 'uploads')
 
 export function ensureUploadsDir(): void {
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true })
+  if (!existsSync(UPLOADS_DIR)) {
+    mkdirSync(UPLOADS_DIR, { recursive: true })
   }
 }
