@@ -22,23 +22,33 @@ export default function DocumentEditor({ document, folders, onUpdate }: Props) {
     setTitle(document.title)
     setContent(document.content)
     loadAttachments()
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    }
   }, [document.id])
 
   const loadAttachments = async () => {
-    const list = await api.attachments.getByDocument(document.id)
-    setAttachments(list)
+    try {
+      const list = await api.attachments.getByDocument(document.id)
+      setAttachments(list)
+    } catch {
+      // silent fail
+    }
   }
 
   const scheduleSave = useCallback((newTitle: string, newContent: string) => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = setTimeout(async () => {
       setSaving(true)
-      const updated = await api.documents.update(document.id, {
-        title: newTitle,
-        content: newContent
-      })
-      setSaving(false)
-      onUpdate(updated)
+      try {
+        const updated = await api.documents.update(document.id, {
+          title: newTitle,
+          content: newContent
+        })
+        onUpdate(updated)
+      } finally {
+        setSaving(false)
+      }
     }, 1000)
   }, [document.id, onUpdate])
 
@@ -55,8 +65,12 @@ export default function DocumentEditor({ document, folders, onUpdate }: Props) {
 
   const handleFolderChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const folderId = e.target.value === '' ? null : Number(e.target.value)
-    const updated = await api.documents.update(document.id, { folder_id: folderId })
-    onUpdate(updated)
+    try {
+      const updated = await api.documents.update(document.id, { folder_id: folderId })
+      onUpdate(updated)
+    } catch {
+      alert('Ordner konnte nicht gespeichert werden.')
+    }
   }
 
   return (

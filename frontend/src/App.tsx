@@ -18,7 +18,7 @@ const navItems: { id: Page; label: string; icon: string }[] = [
   { id: 'projects', label: 'Projekte', icon: '◫' },
   { id: 'milestones', label: 'Meilensteine', icon: '⚑' },
   { id: 'time', label: 'Zeiterfassung', icon: '◷' },
-  { id: 'documents' as Page, label: 'Dokumente', icon: '📄' }
+  { id: 'documents', label: 'Dokumente', icon: '📄' }
 ]
 
 function AppInner(): React.JSX.Element {

@@ -21,11 +21,19 @@ export default function DocumentsPage() {
   }, [selectedFolderId])
 
   const loadFolders = async () => {
-    setFolders(await api.folders.getAll())
+    try {
+      setFolders(await api.folders.getAll())
+    } catch {
+      // silent fail
+    }
   }
 
   const loadDocuments = async () => {
-    setDocuments(await api.documents.getAll(selectedFolderId ?? undefined))
+    try {
+      setDocuments(await api.documents.getAll(selectedFolderId ?? undefined))
+    } catch {
+      // silent fail
+    }
   }
 
   const handleFolderSelect = (id: number | null | undefined) => {
