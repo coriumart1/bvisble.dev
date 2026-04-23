@@ -21,6 +21,7 @@ export default function DocumentEditor({ document, folders, onUpdate }: Props) {
 
   useEffect(() => {
     setTitle(document.title)
+    setSaveError(false)
     setContent(document.content)
     loadAttachments()
     return () => {
