@@ -81,3 +81,29 @@ export interface SearchResult {
   project_id?: number
   project_name?: string
 }
+
+export interface Folder {
+  id: number
+  name: string
+  parent_id: number | null
+  created_at: string
+}
+
+export interface Document {
+  id: number
+  title: string
+  content: string
+  folder_id: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface Attachment {
+  id: number
+  document_id: number
+  filename: string
+  original_name: string
+  mimetype: string
+  size: number
+  created_at: string
+}
